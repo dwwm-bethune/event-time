@@ -34,12 +34,12 @@ class EventController extends AbstractController
     #[Route('/evenement/{id}', name: 'app_event_show')]
     public function show($id): Response
     {
-        if (! in_array($id, array_column($this->events, 'id'))) {
+        if (false === $index = array_search($id, array_column($this->events, 'id'))) {
             throw $this->createNotFoundException();
         }
 
         return $this->render('event/show.html.twig', [
-            'id' => $id,
+            'event' => $this->events[$index],
         ]);
     }
 
