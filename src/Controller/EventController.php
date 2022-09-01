@@ -2,25 +2,21 @@
 
 namespace App\Controller;
 
+use App\Entity\Event;
+use App\Repository\EventRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class EventController extends AbstractController
 {
-    protected $events = [
-        ['id' => 1, 'name' => 'Concert 1', 'description' => 'Lorem', 'price' => 10, 'createdAt' => '2022-08-28 11:38:45', 'startAt' => '2022-08-28 11:38:45', 'endAt' => '2022-08-29 11:38:45'],
-        ['id' => 2, 'name' => 'Concert 2', 'description' => 'Lorem', 'price' => 20, 'createdAt' => '2022-08-30 11:38:45', 'startAt' => '2022-08-30 11:38:45', 'endAt' => '2022-09-02 11:38:45'],
-        ['id' => 3, 'name' => 'Concert 3', 'description' => 'Lorem', 'price' => 30, 'createdAt' => '2022-09-02 11:38:45', 'startAt' => '2022-09-02 11:38:45', 'endAt' => '2022-09-03 11:38:45'],
-    ];
-
     #[Route('/evenements', name: 'app_event')]
-    public function index(): Response
+    public function index(EventRepository $repository): Response
     {
         return $this->render('event/index.html.twig', [
-            'events' => $this->events,
-            'incoming' => count(array_filter($this->events, function ($event) {
-                return new \DateTime($event['startAt']) > new \DateTime();
+            'events' => $events = $repository->findAll(),
+            'incoming' => count(array_filter($events, function ($event) {
+                return $event->getStartAt() > new \DateTime();
             })),
         ]);
     }
@@ -32,14 +28,10 @@ class EventController extends AbstractController
     }
 
     #[Route('/evenement/{id}', name: 'app_event_show')]
-    public function show($id): Response
+    public function show(Event $event): Response
     {
-        if (false === $index = array_search($id, array_column($this->events, 'id'))) {
-            throw $this->createNotFoundException();
-        }
-
         return $this->render('event/show.html.twig', [
-            'event' => $this->events[$index],
+            'event' => $event,
         ]);
     }
 

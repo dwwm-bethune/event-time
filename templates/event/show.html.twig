@@ -1,5 +1,10 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1 class="my-6 text-2xl text-center font-semibold">{{ event.name }}</h1>
+    <div class="max-w-2xl mx-auto">
+        <h1 class="my-6 text-2xl text-center font-semibold">{{ event.name }}</h1>
+        <div class="my-3">
+            {{ event.description }}
+        </div>
+    </div>
 {% endblock %}
