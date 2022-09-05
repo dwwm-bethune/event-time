@@ -7,6 +7,7 @@ use App\Form\EventType;
 use App\Repository\EventRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
@@ -37,6 +38,17 @@ class EventController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            /** @var UploadedFile $posterFile */
+            $posterFile = $form->get('posterFile')->getData();
+            
+            if ($posterFile) {
+                $filename = uniqid().'.'.$posterFile->guessExtension();
+                // Upload du fichier
+                $posterFile->move($this->getParameter('event_uploads'), $filename);
+                // On insère le nom du fichier dans la BDD
+                $event->setPoster($filename);
+            }
+
             $manager->persist($event);
             $manager->flush();
 

@@ -4,9 +4,11 @@ namespace App\Form;
 
 use App\Entity\Event;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\File;
 
 class EventType extends AbstractType
 {
@@ -29,7 +31,13 @@ class EventType extends AbstractType
                 'label' => 'Date de fin',
                 'years' => range(2022, 2032),
             ])
-            ->add('poster')
+            ->add('posterFile', FileType::class, [
+                'label' => 'Image',
+                'mapped' => false,
+                'constraints' => [
+                    new File(maxSize: '4096k', mimeTypes: ['image/jpg', 'image/jpeg', 'image/png']),
+                ],
+            ])
         ;
     }
 
