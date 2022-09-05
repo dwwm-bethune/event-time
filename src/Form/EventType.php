@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Event;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -15,18 +16,18 @@ class EventType extends AbstractType
             ->add('name', null, [
                 'label' => 'Nom',
             ])
-            ->add('description')
+            ->add('description', TextareaType::class)
             ->add('price', null, [
                 'label' => 'Prix',
             ])
             // ->add('createdAt')
             ->add('startAt', null, [
                 'label' => 'Date de début',
-                'years' => range(2021, 2031),
+                'years' => range(2022, 2032),
             ])
             ->add('endAt', null, [
                 'label' => 'Date de fin',
-                'years' => range(2021, 2031),
+                'years' => range(2022, 2032),
             ])
             ->add('poster')
         ;
