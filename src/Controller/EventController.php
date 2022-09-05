@@ -16,10 +16,13 @@ use Symfony\Component\Routing\Annotation\Route;
 class EventController extends AbstractController
 {
     #[Route('/evenements', name: 'app_event')]
-    public function index(EventRepository $repository): Response
+    public function index(Request $request, EventRepository $repository): Response
     {
+        $events = $repository->search($request->get('q'));
+
         return $this->render('event/index.html.twig', [
-            'events' => $events = $repository->findBy([], ['endAt' => 'DESC']),
+            // 'events' => $events = $repository->findBy([], ['endAt' => 'DESC']),
+            'events' => $events,
             'incoming' => count(array_filter($events, function ($event) {
                 return $event->getStartAt() > new \DateTime();
             })),
