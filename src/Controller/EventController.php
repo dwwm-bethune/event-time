@@ -17,17 +17,25 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class EventController extends AbstractController
 {
-    #[Route('/evenements', name: 'app_event')]
-    public function index(Request $request, EventRepository $repository): Response
+    #[Route('/evenements/{page}', name: 'app_event')]
+    public function index(Request $request, EventRepository $repository, $page = 1): Response
     {
-        $events = $repository->search($request->get('q'));
+        $events = $repository->search($request->get('q'), $page);
+        // Nombre total de pages (Nombre d'événements / Nombre par page)
+        $total = ceil($repository->count([]) / 5);
+
+        if ($page > $total) {
+            throw $this->createNotFoundException();
+        }
 
         return $this->render('event/index.html.twig', [
             // 'events' => $events = $repository->findBy([], ['endAt' => 'DESC']),
             'events' => $events,
-            'incoming' => count(array_filter($events, function ($event) {
+            'incoming' => count(array_filter($repository->findAll(), function ($event) {
                 return $event->getStartAt() > new \DateTime();
             })),
+            'total' => $total,
+            'page' => $page,
         ]);
     }
 
