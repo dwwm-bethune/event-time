@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Event;
 use App\Form\EventType;
 use App\Repository\EventRepository;
+use App\Service\EventService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -31,8 +32,11 @@ class EventController extends AbstractController
     }
 
     #[Route('/evenement/nouveau', name: 'app_event_create')]
-    public function create(Request $request, EntityManagerInterface $manager): Response
-    {
+    public function create(
+        Request $request,
+        EntityManagerInterface $manager,
+        EventService $eventService
+    ): Response {
         $event = new Event();
         $form = $this->createForm(EventType::class, $event);
         $form->handleRequest($request);
@@ -40,11 +44,9 @@ class EventController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var UploadedFile $posterFile */
             $posterFile = $form->get('posterFile')->getData();
-            
+
             if ($posterFile) {
-                $filename = uniqid().'.'.$posterFile->guessExtension();
-                // Upload du fichier
-                $posterFile->move($this->getParameter('event_uploads'), $filename);
+                $filename = $eventService->upload($posterFile);
                 // On insère le nom du fichier dans la BDD
                 $event->setPoster($filename);
             }
